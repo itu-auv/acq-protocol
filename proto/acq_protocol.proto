@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+message Types {
+  message Channels {
+    bool ch0 = 1;
+    bool ch1 = 2;
+    bool ch2 = 3;
+  };
+
+  enum SampleTime {
+    ADC_SAMPLETIME_1CYCLE_5 = 0;
+    ADC_SAMPLETIME_2CYCLES_5 = 1;
+    ADC_SAMPLETIME_8CYCLES_5 = 2;
+    ADC_SAMPLETIME_16CYCLES_5 = 3;
+    ADC_SAMPLETIME_32CYCLES_5 = 4;
+    ADC_SAMPLETIME_64CYCLES_5 = 5;
+    ADC_SAMPLETIME_387CYCLES_5 = 6;
+    ADC_SAMPLETIME_810CYCLES_5 = 7;
+  };
+
+  enum AcquisitionMode {
+    INVALID = 0;
+    ONESHOT = 1;
+    CIRCULAR = 2;
+    STOP = 3;
+  };
+
+  message Range {
+    uint32 low = 1;
+    uint32 high = 2;
+  };
+
+  message ResponseStatus {
+    bool success = 1;
+    string msg = 2;
+  };
+};
+
+message ACQCommand {
+
+  message Configure {
+    message Request {
+      // uint32 sample_size;
+      Types.SampleTime sample_time = 1;
+      Types.Channels channels = 2;
+    };
+
+    message Response { Types.ResponseStatus status = 1; };
+
+    oneof type {
+      Request request = 1;
+      Response response = 2;
+    }
+  };
+
+  message Transfer {
+    message Request {
+      uint32 start_position = 1;
+      uint32 size = 2;
+      Types.Channels channels = 3;
+    };
+
+    message Response {
+      Types.ResponseStatus status = 1;
+      bytes data = 2;
+    };
+
+    oneof type {
+      Request request = 1;
+      Response response = 2;
+    }
+  }
+
+  message SetAcquisition {
+    message Request { Types.AcquisitionMode mode = 1; };
+
+    message Response { Types.ResponseStatus status = 1; };
+
+    oneof type {
+      Request request = 1;
+      Response response = 2;
+    }
+  }
+
+  message CalculateSTFT {
+    message Request {
+      uint32 nfft = 1;
+      uint32 n_window = 2;
+      Types.Range frequency_range = 3;
+    };
+
+    message Response {
+      Types.ResponseStatus status = 1;
+      // Todo
+    };
+
+    oneof type {
+      Request request = 1;
+      Response response = 2;
+    }
+  };
+
+  message BoardInformation {
+    message Request {};
+
+    message Response {
+      Types.ResponseStatus status = 1;
+      uint32 firmware_major = 2;
+      uint32 firmware_minor = 3;
+      uint32 sample_size = 4;
+      uint32 adc_clock_frequency = 5;
+    };
+
+    oneof type {
+      Request request = 1;
+      Response response = 2;
+    }
+  }
+
+  oneof type {
+    Configure configure = 1;
+    Transfer transfer = 2;
+    SetAcquisition set_acquisition = 3;
+    CalculateSTFT calculate_stft = 4;
+    BoardInformation board_info = 5;
+  }
+}
+
+// message ACQPacket {
+//   google.protobuf.Any data = 1;
+// }
