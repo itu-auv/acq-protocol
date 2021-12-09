@@ -36,7 +36,7 @@ jobs:
         mv sources/nanopb/proto/*.c sources/nanopb/src/
         rm -rf sources/nanopb/proto
         git clone https://github.com/nanopb/nanopb.git _nanopb_
-        cp _nanopb_/pb*.h sources/nanopb/include/proto/
+        cp _nanopb_/pb*.h sources/nanopb/include/
         cp _nanopb_/pb*.c sources/nanopb/src/
         zip -r sources.zip sources
     - name: Create Release
