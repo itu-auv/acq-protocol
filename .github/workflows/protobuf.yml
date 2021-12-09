@@ -1,0 +1,22 @@
+name: Protobuf Compile
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Protobuf & NanoPB
+      run: |
+        sudo apt-get -y install protobuf protobuf-c-compiler
+        sudo apt-get -y install python3-pip
+        pip3 install nanopb        
+        
+    - name: Generate
+      run: | 
+        ./generate.sh
