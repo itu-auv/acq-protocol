@@ -18,5 +18,9 @@ jobs:
         pip3 install nanopb        
         
     - name: Generate
-      run: | 
+      run: |
+        mkdir python
+        mkdir c
+        mkdir cpp
+        mkdir nanopb
         ./generate.sh
