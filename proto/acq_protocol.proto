@@ -1,131 +1,170 @@
 syntax = "proto3";
 
+/**
+ * Generic Message Types for ACQ Protocol
+ */
 message Types {
+
+  /**
+   * Channel Configuration
+   */
   message Channels {
-    bool ch0 = 1;
-    bool ch1 = 2;
-    bool ch2 = 3;
+    bool ch0 = 1; /// Channel-0 Enabled/Disabled
+    bool ch1 = 2; /// Channel-1 Enabled/Disabled
+    bool ch2 = 3; /// Channel-2 Enabled/Disabled
   };
 
+  /**
+   * Sampling Time Configuration
+   */
   enum SampleTime {
-    ADC_SAMPLETIME_1CYCLE_5 = 0;
-    ADC_SAMPLETIME_2CYCLES_5 = 1;
-    ADC_SAMPLETIME_8CYCLES_5 = 2;
-    ADC_SAMPLETIME_16CYCLES_5 = 3;
-    ADC_SAMPLETIME_32CYCLES_5 = 4;
-    ADC_SAMPLETIME_64CYCLES_5 = 5;
-    ADC_SAMPLETIME_387CYCLES_5 = 6;
-    ADC_SAMPLETIME_810CYCLES_5 = 7;
+    ADC_SAMPLETIME_1CYCLE_5 = 0;    /// 1.5 cycle period
+    ADC_SAMPLETIME_2CYCLES_5 = 1;   /// 2.5 cycle period
+    ADC_SAMPLETIME_8CYCLES_5 = 2;   /// 8.5 cycle period
+    ADC_SAMPLETIME_16CYCLES_5 = 3;  /// 16.5 cycle period
+    ADC_SAMPLETIME_32CYCLES_5 = 4;  /// 32.5 cycle period
+    ADC_SAMPLETIME_64CYCLES_5 = 5;  /// 64.5 cycle period
+    ADC_SAMPLETIME_387CYCLES_5 = 6; /// 387.5 cycle period
+    ADC_SAMPLETIME_810CYCLES_5 = 7; /// 810.5 cycle period
   };
 
+  /**
+   * Acquisition Mode is used to configure
+   * stream/capturing behaviour.
+   */
   enum AcquisitionMode {
-    INVALID = 0;
-    ONESHOT = 1;
-    CIRCULAR = 2;
-    STOP = 3;
+    INVALID = 0;  /// No valid type, will return error message
+    ONESHOT = 1;  /// Once buffer is filled, acquisition will stop
+    CIRCULAR = 2; /// Once buffer is filled, it circles back and overwrites
+    STOP = 3;     /// Stops acquisition
   };
 
+  /**
+   * Generic range type primarily used in
+   * specifying frequency range indexes
+   */
   message Range {
-    uint32 low = 1;
-    uint32 high = 2;
+    uint32 low = 1;  /// Lower bound value
+    uint32 high = 2; /// Upper bound value
   };
 
+  /**
+   * Generic message response status
+   * contains success or fail flag,
+   * also an error message if failed.
+   */
   message ResponseStatus {
-    bool success = 1;
-    string msg = 2;
+    bool success = 1; /// success/fail flag
+    string msg = 2;   /// Error message (if failed)
   };
 };
 
+/**
+ * Generic ACQ Commands
+ */
 message ACQCommand {
 
+  /**
+   * Configures sample size,
+   * sample time and active channels
+   */
   message Configure {
     message Request {
-      // uint32 sample_size;
-      Types.SampleTime sample_time = 1;
-      Types.Channels channels = 2;
+      uint32 sample_size = 1;           /// Sample size
+      Types.SampleTime sample_time = 2; /// Sample time
+      Types.Channels channels = 3;      /// Active channels
     };
 
-    message Response { Types.ResponseStatus status = 1; };
-
-    oneof type {
-      Request request = 1;
-      Response response = 2;
-    }
+    message Response {
+      Types.ResponseStatus status = 1; /// status
+    };
   };
 
+  /**
+   * Transfers buffer data of given channels,
+   * from start_position to start_position + size
+   */
   message Transfer {
+
     message Request {
-      uint32 start_position = 1;
-      uint32 size = 2;
-      Types.Channels channels = 3;
+      uint32 start_position = 1;   /// Start index of buffer
+      uint32 size = 2;             /// Length of transfer
+      Types.Channels channels = 3; /// Channels to be transferred
     };
 
     message Response {
-      Types.ResponseStatus status = 1;
-      bytes data = 2;
+      Types.ResponseStatus status = 1; /// status
+      bytes data = 2;                  /// channel data stream
+                                       /// TODO: This needs to be improved.
     };
-
-    oneof type {
-      Request request = 1;
-      Response response = 2;
-    }
   }
 
+  /**
+   * Starts / stops acquisition based on the mode provided
+   */
   message SetAcquisition {
-    message Request { Types.AcquisitionMode mode = 1; };
 
-    message Response { Types.ResponseStatus status = 1; };
-
-    oneof type {
-      Request request = 1;
-      Response response = 2;
-    }
-  }
-
-  message CalculateSTFT {
     message Request {
-      uint32 nfft = 1;
-      uint32 n_window = 2;
-      Types.Range frequency_range = 3;
+      Types.AcquisitionMode mode = 1; /// mode (circular / oneshot / stop)
     };
 
     message Response {
-      Types.ResponseStatus status = 1;
+      Types.ResponseStatus status = 1; /// status
+    };
+  }
+
+  /**
+   * Calculates S-TFT for frequency range
+   */
+  message CalculateSTFT {
+
+    message Request {
+      uint32 nfft = 1;                 /// FFT size
+      uint32 n_window = 2;             /// Window (FFT shift)
+      Types.Range frequency_range = 3; /// Frequency Range (bin index)
+    };
+
+    message Response {
+      Types.ResponseStatus status = 1; /// status
       // Todo
     };
-
-    oneof type {
-      Request request = 1;
-      Response response = 2;
-    }
   };
 
+  /**
+   * Obtains board spesific information
+   */
   message BoardInformation {
-    message Request {};
 
-    message Response {
-      Types.ResponseStatus status = 1;
-      uint32 firmware_major = 2;
-      uint32 firmware_minor = 3;
-      uint32 sample_size = 4;
-      uint32 adc_clock_frequency = 5;
+    message Request {
+      bool dummy = 1; /// dummy object
     };
 
-    oneof type {
-      Request request = 1;
-      Response response = 2;
-    }
-  }
-
-  oneof type {
-    Configure configure = 1;
-    Transfer transfer = 2;
-    SetAcquisition set_acquisition = 3;
-    CalculateSTFT calculate_stft = 4;
-    BoardInformation board_info = 5;
+    message Response {
+      Types.ResponseStatus status = 1; /// status
+      float firmware_version = 2;      /// Firmware version (ex: 3.5f)
+      uint32 sample_size = 3;          /// Maximum sample size
+      uint32 adc_clock_frequency = 4;  /// ADC clock frequency
+                                       /// Used to convert sample time to freq
+    };
   }
 }
 
-// message ACQPacket {
-//   google.protobuf.Any data = 1;
-// }
+message ACQRequest {
+  oneof request {
+    ACQCommand.Configure.Request configure = 1;
+    ACQCommand.Transfer.Request transfer = 2;
+    ACQCommand.SetAcquisition.Request set_acquisition = 3;
+    ACQCommand.CalculateSTFT.Request calculate_stft = 4;
+    ACQCommand.BoardInformation.Request board_info = 5;
+  };
+};
+
+message ACQResponse {
+  oneof response {
+    ACQCommand.Configure.Response configure = 1;
+    ACQCommand.Transfer.Response transfer = 2;
+    ACQCommand.SetAcquisition.Response set_acquisition = 3;
+    ACQCommand.CalculateSTFT.Response calculate_stft = 4;
+    ACQCommand.BoardInformation.Response board_info = 5;
+  };
+};
