@@ -57,6 +57,16 @@ message Types {
     bool success = 1; /// success/fail flag
     string msg = 2;   /// Error message (if failed)
   };
+
+  /**
+   * Function type used in setting buffers
+   */
+  enum FunctionType {
+    SINE = 0;     /// Sine wave
+    SQUARE = 1;   /// Square wave
+    TRIANGLE = 2; /// Triangle wave
+    SAWTOOTH = 3; /// Sawtooth wave
+  }
 };
 
 /**
@@ -94,8 +104,9 @@ message ACQCommand {
 
     message Response {
       Types.ResponseStatus status = 1; /// status
-      bytes data = 2;                  /// channel data stream
-                                       /// TODO: This needs to be improved.
+      bytes ch0 = 2;                   /// channel 0 data stream
+      bytes ch1 = 3;                   /// channel 1 data stream
+      bytes ch2 = 4;                   /// channel 2 data stream
     };
   }
 
@@ -146,7 +157,26 @@ message ACQCommand {
       uint32 adc_clock_frequency = 4;  /// ADC clock frequency
                                        /// Used to convert sample time to freq
     };
-  }
+  };
+
+  /**
+   * Obtains board spesific information
+   */
+  message SetBuffers {
+    message Request {
+      uint32 amplitude = 1;                 /// Amplitude of given function
+      uint32 frequency = 2;                 /// Frequency of signal
+      Types.FunctionType function_type = 3; /// Function type
+      float offset_period = 4; /// Time offset x, t_off = x * period
+      float repeat_period = 5; /// Repeat period x, t_signal = x * period
+      uint32 reference = 6;    /// Reference value
+      Types.Channels channels = 7;
+    };
+
+    message Response {
+      Types.ResponseStatus status = 1; /// status
+    };
+  };
 }
 
 message ACQRequest {
@@ -156,6 +186,7 @@ message ACQRequest {
     ACQCommand.SetAcquisition.Request set_acquisition = 3;
     ACQCommand.CalculateSTFT.Request calculate_stft = 4;
     ACQCommand.BoardInformation.Request board_info = 5;
+    ACQCommand.SetBuffers.Request set_buffers = 6;
   };
 };
 
@@ -166,5 +197,6 @@ message ACQResponse {
     ACQCommand.SetAcquisition.Response set_acquisition = 3;
     ACQCommand.CalculateSTFT.Response calculate_stft = 4;
     ACQCommand.BoardInformation.Response board_info = 5;
+    ACQCommand.SetBuffers.Response set_buffers = 6;
   };
 };
