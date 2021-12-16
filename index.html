@@ -231,6 +231,18 @@
                 </li>
               
                 <li>
+                  <a href="#.ACQCommand.SetBuffers"><span class="badge">M</span>ACQCommand.SetBuffers</a>
+                </li>
+              
+                <li>
+                  <a href="#.ACQCommand.SetBuffers.Request"><span class="badge">M</span>ACQCommand.SetBuffers.Request</a>
+                </li>
+              
+                <li>
+                  <a href="#.ACQCommand.SetBuffers.Response"><span class="badge">M</span>ACQCommand.SetBuffers.Response</a>
+                </li>
+              
+                <li>
                   <a href="#.ACQCommand.Transfer"><span class="badge">M</span>ACQCommand.Transfer</a>
                 </li>
               
@@ -269,6 +281,10 @@
               
                 <li>
                   <a href="#.Types.AcquisitionMode"><span class="badge">E</span>Types.AcquisitionMode</a>
+                </li>
+              
+                <li>
+                  <a href="#.Types.FunctionType"><span class="badge">E</span>Types.FunctionType</a>
                 </li>
               
                 <li>
@@ -568,6 +584,103 @@
 
         
       
+        <h3 id=".ACQCommand.SetBuffers">ACQCommand.SetBuffers</h3>
+        <p>Obtains board spesific information</p>
+
+        
+
+        
+      
+        <h3 id=".ACQCommand.SetBuffers.Request">ACQCommand.SetBuffers.Request</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>amplitude</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>Amplitude of given function </p></td>
+                </tr>
+              
+                <tr>
+                  <td>frequency</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>Frequency of signal </p></td>
+                </tr>
+              
+                <tr>
+                  <td>function_type</td>
+                  <td><a href="#Types.FunctionType">Types.FunctionType</a></td>
+                  <td></td>
+                  <td><p>Function type </p></td>
+                </tr>
+              
+                <tr>
+                  <td>offset_period</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>Time offset x, t_off = x * period </p></td>
+                </tr>
+              
+                <tr>
+                  <td>repeat_period</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>Repeat period x, t_signal = x * period </p></td>
+                </tr>
+              
+                <tr>
+                  <td>reference</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>Reference value </p></td>
+                </tr>
+              
+                <tr>
+                  <td>channels</td>
+                  <td><a href="#Types.Channels">Types.Channels</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id=".ACQCommand.SetBuffers.Response">ACQCommand.SetBuffers.Response</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>status</td>
+                  <td><a href="#Types.ResponseStatus">Types.ResponseStatus</a></td>
+                  <td></td>
+                  <td><p>status </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id=".ACQCommand.Transfer">ACQCommand.Transfer</h3>
         <p>Transfers buffer data of given channels,</p><p>from start_position to start_position + size</p>
 
@@ -631,10 +744,24 @@
                 </tr>
               
                 <tr>
-                  <td>data</td>
+                  <td>ch0</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>channel data stream </p></td>
+                  <td><p>channel 0 data stream </p></td>
+                </tr>
+              
+                <tr>
+                  <td>ch1</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>channel 1 data stream </p></td>
+                </tr>
+              
+                <tr>
+                  <td>ch2</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>channel 2 data stream </p></td>
                 </tr>
               
             </tbody>
@@ -689,6 +816,13 @@
                   <td><p> </p></td>
                 </tr>
               
+                <tr>
+                  <td>set_buffers</td>
+                  <td><a href="#ACQCommand.SetBuffers.Request">ACQCommand.SetBuffers.Request</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -737,6 +871,13 @@
                 <tr>
                   <td>board_info</td>
                   <td><a href="#ACQCommand.BoardInformation.Response">ACQCommand.BoardInformation.Response</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>set_buffers</td>
+                  <td><a href="#ACQCommand.SetBuffers.Response">ACQCommand.SetBuffers.Response</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -887,6 +1028,41 @@
                 <td>STOP</td>
                 <td>3</td>
                 <td><p>Stops acquisition</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id=".Types.FunctionType">Types.FunctionType</h3>
+        <p>Function type used in setting buffers</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>SINE</td>
+                <td>0</td>
+                <td><p>Sine wave</p></td>
+              </tr>
+            
+              <tr>
+                <td>SQUARE</td>
+                <td>1</td>
+                <td><p>Square wave</p></td>
+              </tr>
+            
+              <tr>
+                <td>TRIANGLE</td>
+                <td>2</td>
+                <td><p>Triangle wave</p></td>
+              </tr>
+            
+              <tr>
+                <td>SAWTOOTH</td>
+                <td>3</td>
+                <td><p>Sawtooth wave</p></td>
               </tr>
             
           </tbody>
